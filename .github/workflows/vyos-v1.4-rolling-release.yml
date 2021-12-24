@@ -1,6 +1,7 @@
 name: VyOS v1.4 Rolling Release
 
 on:
+  push:
   schedule:
     - cron: 0 3 * * *
 
@@ -41,22 +42,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@master
-
-      - name: Download artifact
+      - name: Download Artifacts
         uses: actions/download-artifact@v2
         with:
           name: vyos-${{ env.VERSION }}-${{ env.ARCHITECTURE }}-iso
-          path: vyos-${{ env.VERSION }}-${{ env.ARCHITECTURE }}-iso
 
-      - name: Upload release asset
+      - name: Release
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          asset=$(find ./vyos-${{ env.VERSION }}-${{ env.ARCHITECTURE }}-iso/ -name "vyos-${{ env.VERSION }}-*.iso" | xargs)
-          tag_name="v${{ env.VERSION }}"
-          hub release edit -a "$asset" -m "" "$tag_name"
+        with:
+          name: VyOS v${{ env.VERSION }} Release
+          body: VyOS v${{ env.VERSION }} Release
+          draft: false
+          prerelease: false
+          files: |
+            vyos-build/build/vyos-${{ env.VERSION }}-*.iso
 
   delete_old_workflow_runs:
     needs: release
