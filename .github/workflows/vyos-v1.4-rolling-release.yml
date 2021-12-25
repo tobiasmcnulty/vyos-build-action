@@ -31,22 +31,6 @@ jobs:
           ./configure --architecture $ARCHITECTURE --build-by $BUILD_BY --build-type $BUILD_TYPE --version $VERSION-$(date +%Y%m%d%H%M)
           sudo make iso
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: vyos-${{ env.VERSION }}-${{ env.ARCHITECTURE }}-iso
-          path: vyos-build/build/vyos-${{ env.VERSION }}-*.iso
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download Artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: vyos-${{ env.VERSION }}-${{ env.ARCHITECTURE }}-iso
-
       - name: Release
         uses: softprops/action-gh-release@v1
         env:
@@ -58,13 +42,3 @@ jobs:
           prerelease: false
           files: |
             vyos-build/build/vyos-${{ env.VERSION }}-*.iso
-
-  delete_old_workflow_runs:
-    needs: release
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Delete old workflow runs
-        uses: GitRML/delete-workflow-runs@main
-        with:
-          retain_days: 2
