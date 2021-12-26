@@ -14,11 +14,11 @@ Github Action automate the build process and save you some times.
 
 There are two workflow files:
 
-[vyos-v1.3.x-equuleus.yml](.github/workflows/vyos-v1.3.x-equuleus.yml)
+[vyos-v1.3-equuleus.yml](.github/workflows/vyos-v1.3-equuleus.yml)
 
 For VyOS v1.3.x LTS release, action trigger by a tag push. It will build the ISO and VM image files, create a release and upload the release asset.
 
-[vyos-v1.4-rolling-release.yml](.github/workflows/vyos-v1.4-rolling-release.yml)
+[vyos-v1.4-sagitta.yml](.github/workflows/vyos-v1.4-sagitta.yml)
 
 For VyOs v1.4 rolling release, action trigger on schedule every day. ISO file can be found in the Action Artifacts section.
 
