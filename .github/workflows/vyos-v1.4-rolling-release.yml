@@ -1,44 +1,57 @@
-name: VyOS v1.4 Rolling Release
+name: VyOS Release
 
-# on:
-#   push:
-#   schedule:
-#     - cron: 0 3 * * *
+on:
+  push:
+    tags:
+      - '1.4.*'
 
 env:
   GIT_CLONE_URL: https://github.com/vyos/vyos-build
-  BRANCH: current
-  ARCHITECTURE: amd64
+  DEBIAN_MIRROR: http://ftp.us.debian.org/debian/
+  BRANCH: equuleus
+  BUILD_ARCH: amd64
   BUILD_BY: vyos-build-action@github.com
   BUILD_TYPE: release
-  VERSION: 1.4-rolling
-  DEBIAN_MIRROR: http://ftp.us.debian.org/debian/
+  ARTIFACTS_DIR: artifacts
+  WORKING_DIR: vyos-build
+  STATUS_SUCCESS: "::set-output name=status::success"
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     container:
       image: vyos/vyos-build:current
       options: --workdir /vyos --privileged
 
     steps:
-      - name: Clone source code
-        run: git clone -b $BRANCH --single-branch $GIT_CLONE_URL
+      - name: Checkout
+        uses: actions/checkout@v2
 
-      - name: Build ISO
-        working-directory: ./vyos-build
+      - name: Set vars
         run: |
-          ./configure --architecture $ARCHITECTURE --build-by $BUILD_BY --build-type $BUILD_TYPE --version $VERSION-$(date +%Y%m%d%H%M)
-          sudo make iso
+          export BUILD_VERSION=$(echo ${{ github.ref }} | cut -d'/' -f3)
+
+      - name: Clone Source Code
+        run: |
+          git clone -b $BRANCH --single-branch $GIT_CLONE_URL $WORKING_DIR
+          cd $WORKING_DIR
+          ./configure --architecture $BUILD_ARCH --build-by $BUILD_BY --build-type $BUILD_TYPE --version $BUILD_VERSION
+          mkdir -p ./$ARTIFACTS_DIR
+
+      - name: Build ISO Image
+        id: iso
+        working-directory: ./${{ env.WORKING_DIR }}
+        run: |
+          make iso && echo $STATUS_SUCCESS
 
       - name: Release
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: VyOS v${{ env.VERSION }} Release
-          body: VyOS v${{ env.VERSION }} Release
+          name: VyOS v${{ env.BUILD_VERSION }} Release
+          body: VyOS v${{ env.BUILD_VERSION }} Release
           draft: false
           prerelease: false
-          files: |
-            vyos-build/build/*.iso
+          files: build/*.iso
