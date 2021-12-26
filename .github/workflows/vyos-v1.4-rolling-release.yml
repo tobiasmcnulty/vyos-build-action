@@ -41,4 +41,4 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            vyos-build/build/vyos-${{ env.VERSION }}-*.iso
+            vyos-build/build/*.iso
