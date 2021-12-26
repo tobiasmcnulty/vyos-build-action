@@ -8,7 +8,7 @@ on:
 env:
   GIT_CLONE_URL: https://github.com/vyos/vyos-build
   DEBIAN_MIRROR: http://ftp.us.debian.org/debian/
-  BRANCH: equuleus
+  BRANCH: sagitta
   BUILD_ARCH: amd64
   BUILD_BY: vyos-build-action@github.com
   BUILD_TYPE: release
@@ -31,6 +31,7 @@ jobs:
       - name: Set vars
         run: |
           export BUILD_VERSION=$(echo ${{ github.ref }} | cut -d'/' -f3)
+          echo $BUILD_VERSION
 
       - name: Clone Source Code
         run: |
