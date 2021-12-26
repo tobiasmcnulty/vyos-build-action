@@ -30,14 +30,13 @@ jobs:
 
       - name: Set vars
         run: |
-          export BUILD_VERSION=$(echo ${{ github.ref }} | cut -d'/' -f3)
-          echo $BUILD_VERSION
+          echo "build_version=$(echo ${{ github.ref }} | cut -d'/' -f3)" >> $GITHUB_ENV
 
       - name: Clone Source Code
         run: |
           git clone -b $BRANCH --single-branch $GIT_CLONE_URL $WORKING_DIR
           cd $WORKING_DIR
-          ./configure --architecture $BUILD_ARCH --build-by $BUILD_BY --build-type $BUILD_TYPE --version $BUILD_VERSION
+          ./configure --architecture $BUILD_ARCH --build-by $BUILD_BY --build-type $BUILD_TYPE --version ${{ env.build_version }}
           mkdir -p ./$ARTIFACTS_DIR
 
       - name: Build ISO Image
