@@ -12,7 +12,6 @@ env:
   BUILD_ARCH: amd64
   BUILD_BY: vyos-build-action@github.com
   BUILD_TYPE: release
-  ARTIFACTS_DIR: artifacts
   WORKING_DIR: vyos-build
   STATUS_SUCCESS: "::set-output name=status::success"
 
@@ -37,13 +36,15 @@ jobs:
           git clone -b $BRANCH --single-branch $GIT_CLONE_URL $WORKING_DIR
           cd $WORKING_DIR
           ./configure --architecture $BUILD_ARCH --build-by $BUILD_BY --build-type $BUILD_TYPE --version ${{ env.build_version }}
-          mkdir -p ./$ARTIFACTS_DIR
 
       - name: Build ISO Image
-        id: iso
         working-directory: ./${{ env.WORKING_DIR }}
         run: |
           make iso && echo $STATUS_SUCCESS
+
+      - name: Find ISOs
+        run: |
+          find . -name "*.iso"
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -54,4 +55,4 @@ jobs:
           body: VyOS v${{ env.build_version }} Release
           draft: false
           prerelease: false
-          files: "**.iso"
+          files: "${{ env.WORKING_DIR }}/build/*.iso"
