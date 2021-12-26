@@ -50,8 +50,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: VyOS v${{ env.BUILD_VERSION }} Release
-          body: VyOS v${{ env.BUILD_VERSION }} Release
+          name: VyOS v${{ env.build_version }} Release
+          body: VyOS v${{ env.build_version }} Release
           draft: false
           prerelease: false
           files: "**.iso"
