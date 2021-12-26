@@ -54,4 +54,4 @@ jobs:
           body: VyOS v${{ env.BUILD_VERSION }} Release
           draft: false
           prerelease: false
-          files: build/*.iso
+          files: "**.iso"
